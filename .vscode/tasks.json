@@ -1,0 +1,53 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Game",
+			"detail": "Builds game.gba via the devkitARM/libgba Makefile (unchanged toolchain/target).",
+			"type": "shell",
+			"command": "C:\\devkitPro\\msys2\\usr\\bin\\bash.exe",
+			"args": [
+				"-lc",
+				"export DEVKITPRO=/opt/devkitpro; export DEVKITARM=/opt/devkitpro/devkitARM; export PATH=$DEVKITARM/bin:$DEVKITPRO/tools/bin:$PATH; cd '${workspaceFolder}' && make"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": ["$gcc"],
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
+		},
+		{
+			"label": "Run Game",
+			"detail": "Builds the ROM, verifies game.gba exists, then launches it in mGBA.",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"if (!(Test-Path '${workspaceFolder}\\game.gba')) { Write-Error 'game.gba was not found - the build must have failed.'; exit 1 }; Start-Process -FilePath 'C:\\Program Files\\mGBA\\mGBA.exe' -ArgumentList '${workspaceFolder}\\game.gba'"
+			],
+			"dependsOn": "Build Game",
+			"dependsOrder": "sequence",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared",
+				"clear": true
+			}
+		}
+	]
+}

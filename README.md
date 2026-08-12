@@ -45,7 +45,16 @@ Makefile   devkitPro gba_rules-based build
 
 ## Status
 
-Current `src/main.c` is a minimal pipeline test: fills the screen with a solid color. No gameplay yet — this exists to prove compile → link → `.gba` → hardware works end to end.
+`src/main.c` currently shows a procedural "WELCOME KHALED" title screen (starfield, mountains, sliding title, blinking prompt) and transitions to a placeholder "GAME STARTED" screen on START. No gameplay yet.
+
+## PC testing (VS Code + mGBA)
+
+For fast iteration without hardware, this repo has VS Code tasks that build and run the ROM in [mGBA](https://mgba.io/) (installed via `winget install JeffreyPfau.mGBA`):
+
+- **Terminal → Run Task → Build Game** (or `Ctrl+Shift+B`) — runs `make` via devkitPro's own MSYS2 shell.
+- **Terminal → Run Task → Run Game** (or `Ctrl+Alt+R`) — builds, verifies `game.gba` was produced, and opens it in mGBA.
+
+See `.vscode/tasks.json` / `.vscode/keybindings.json`. This is a PC dev-loop convenience only — the RG35XX Plus remains the real hardware target (see below).
 
 ## Testing on hardware
 
