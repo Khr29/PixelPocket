@@ -1,44 +1,58 @@
 /*---------------------------------------------------------------------------------
-    DEDDY PARTY -- character art preview (SNES)
+    DEDDY PARTY -- first playable prototype (SNES)
 
-    Displays a single character -- the "MR. T." parody -- centered on a
-    plain backdrop with its name underneath. No gameplay, no title screen,
-    no other characters: this scene exists purely to evaluate the sprite
-    art before anything else gets built on top of it.
+    BLAZE walks around a small checkered party room (D-pad, wall collision)
+    and can walk up to CAPTAIN CLUTCH and press A to complete the party.
+    No title screen, no character select, no menus/scoring yet -- just the
+    smallest possible playable loop: move, interact, win.
 ---------------------------------------------------------------------------------*/
 #include <snes.h>
+#include "player.h"
+#include "party.h"
 #include "character.h"
 
 #define BACKDROP_COLOR RGB5(9, 11, 16)
 
-#define SPRITE_X 96
-#define SPRITE_Y 56
+static void show_win_screen(void) {
+    characters_hide_all();
 
-//---------------------------------------------------------------------------------
-int main(void) {
-    // Text console on BG0 for the character's name (uses pvsneslib's built-in
-    // default font -- no custom font asset needed for a two-line label).
     consoleInitDefaultText(0);
     bgSetGfxPtr(0, 0x3000);
     bgSetMapPtr(0, 0x6800, SC_32x32);
-
-    trump_load();
-
-    setMode(BG_MODE1, 0);
-    bgSetDisable(1);
-    bgSetDisable(2);
-
     setPaletteColor(0, BACKDROP_COLOR);
 
-    consoleDrawText(13, 18, "MR. T.");
-    consoleDrawText(4, 20, "(totally not a real person)");
+    consoleDrawText(7, 11, "PARTY COMPLETE!");
+    consoleDrawText(2, 14, "You found Captain Clutch");
+    consoleDrawText(4, 17, "and started the party.");
+    consoleDrawText(4, 21, "Press B to play again");
+}
 
-    trump_place(SPRITE_X, SPRITE_Y);
-
-    setScreenOn();
-
+int main(void) {
     while (1) {
-        WaitForVBlank();
+        party_init();
+        player_init();
+        setScreenOn();
+
+        while (1) {
+            WaitForVBlank();
+
+            u16 pad = padsCurrent(0);
+            player_update(pad);
+
+            if (party_check_interaction(player_get_x(), player_get_y(), (padsDown(0) & KEY_A) != 0)) {
+                break;
+            }
+        }
+
+        show_win_screen();
+
+        while (1) {
+            WaitForVBlank();
+            if (padsDown(0) & KEY_B) {
+                break;
+            }
+        }
     }
+
     return 0;
 }
