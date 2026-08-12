@@ -1,7 +1,16 @@
-build/
-*.elf
-*.gba
-*.map
-*.sav
+# Build output
+*.sfc
+*.sym
+*.symfull
+*.log
+linkfile
+hdr.asm
+*.obj
+
+# Generated from assets/**/*.png by gfx4snes -- keep the .png, not these
+*.pic
+*.pal
+*.inc
+*_data.as
 
 .claude/

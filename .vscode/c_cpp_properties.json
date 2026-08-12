@@ -2,26 +2,17 @@
 	"version": 4,
 	"configurations": [
 		{
-			"name": "devkitARM-GBA",
-			"compilerPath": "C:\\devkitPro\\devkitARM\\bin\\arm-none-eabi-gcc.exe",
+			"name": "pvsneslib-SNES",
+			"compilerPath": "",
 			"cStandard": "gnu17",
-			"cppStandard": "gnu++17",
-			"intelliSenseMode": "gcc-arm",
+			"intelliSenseMode": "gcc-x86",
 			"includePath": [
-				"${workspaceFolder}/include",
-				"${workspaceFolder}/build",
-				"C:/devkitPro/libgba/include",
-				"C:/devkitPro/devkitARM/arm-none-eabi/include",
-				"C:/devkitPro/devkitARM/lib/gcc/arm-none-eabi/16.1.0/include",
-				"C:/devkitPro/devkitARM/lib/gcc/arm-none-eabi/16.1.0/include-fixed"
+				"${workspaceFolder}/src",
+				"${workspaceFolder}",
+				"C:/snesdev/pvsneslib/include",
+				"C:/snesdev/devkitsnes/include"
 			],
-			"defines": [],
-			"compilerArgs": [
-				"-mthumb",
-				"-mthumb-interwork",
-				"-mcpu=arm7tdmi",
-				"-mtune=arm7tdmi"
-			]
+			"defines": []
 		}
 	]
 }
