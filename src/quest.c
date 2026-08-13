@@ -135,22 +135,22 @@ static void render_dashboard(void) {
     text_draw(25, 1, "DAY ", TEXT_CREAM);
     draw_digits2(29, 1, DAY_NUMBER, TEXT_CREAM);
 
-    text_draw_u16(1, 6, g_level, TEXT_GOLD);
-    text_draw_u16_comma(25, 6, g_totalXP, TEXT_GOLD);
+    text_draw_u16(1, 4, g_level, TEXT_GOLD);
+    text_draw_u16_comma(25, 4, g_totalXP, TEXT_GOLD);
 
-    text_draw_bar(2, 10, 28, g_xpIntoLevel, g_xpToNextLevel, TEXT_GOLD);
+    text_draw_bar(2, 7, 28, g_xpIntoLevel, g_xpToNextLevel, TEXT_GOLD);
     {
-        u8 c = text_draw_u16_comma(13, 12, g_xpIntoLevel, TEXT_CREAM);
-        c = text_draw(c, 12, " / ", TEXT_CREAM);
-        c = text_draw_u16_comma(c, 12, g_xpToNextLevel, TEXT_CREAM);
-        text_draw(c, 12, " XP", TEXT_CREAM);
+        u8 c = text_draw_u16_comma(13, 8, g_xpIntoLevel, TEXT_CREAM);
+        c = text_draw(c, 8, " / ", TEXT_CREAM);
+        c = text_draw_u16_comma(c, 8, g_xpToNextLevel, TEXT_CREAM);
+        text_draw(c, 8, " XP", TEXT_CREAM);
     }
 
-    draw_digits2(12, 14, g_streak, TEXT_ORANGE);
+    draw_digits2(12, 10, g_streak, TEXT_ORANGE);
 
     for (i = 0; i < QUEST_TODAY_COUNT; i++) {
         Quest *q = &QUEST_TODAY[i];
-        u8 row = (u8)(17 + i);
+        u8 row = (u8)(13 + i);
         u8 nameColor = q->completed ? TEXT_MUTED : TEXT_CREAM;
         u8 c;
 
@@ -167,17 +167,17 @@ static void render_dashboard(void) {
     }
 
     {
-        u8 c = text_draw(1, 21, "TODAY: ", TEXT_TEAL);
-        c = text_draw_u16(c, 21, doneCount, TEXT_TEAL);
-        c = text_draw(c, 21, " / ", TEXT_TEAL);
-        c = text_draw_u16(c, 21, QUEST_TODAY_COUNT, TEXT_TEAL);
-        text_draw(c, 21, " COMPLETE", TEXT_TEAL);
+        u8 c = text_draw(1, 17, "TODAY: ", TEXT_TEAL);
+        c = text_draw_u16(c, 17, doneCount, TEXT_TEAL);
+        c = text_draw(c, 17, " / ", TEXT_TEAL);
+        c = text_draw_u16(c, 17, QUEST_TODAY_COUNT, TEXT_TEAL);
+        text_draw(c, 17, " COMPLETE", TEXT_TEAL);
     }
-    text_draw_dots(26, 21, QUEST_TODAY_COUNT, doneCount, TEXT_GREEN);
+    text_draw_dots(26, 17, QUEST_TODAY_COUNT, doneCount, TEXT_GREEN);
 
     for (i = 0; i < QUEST_SIDE_COUNT; i++) {
         Quest *q = &QUEST_SIDE[i];
-        u8 row = (u8)(24 + i);
+        u8 row = (u8)(20 + i);
         u8 c;
         text_draw(1, row, q->name, TEXT_CREAM);
         c = (u8)(30 - (1 + text_u16_width(q->xp) + 3));
@@ -185,6 +185,8 @@ static void render_dashboard(void) {
         c = text_draw_u16(c, row, q->xp, TEXT_GOLD);
         text_draw(c, row, " XP", TEXT_GOLD);
     }
+
+    text_draw(1, 24, "A SELECT   B BACK   START STATS", TEXT_MUTED);
 
     text_commit();
 }
@@ -252,15 +254,15 @@ static void render_stats(void) {
     text_draw_u16(24, 4, g_level, TEXT_GOLD);
     text_draw_u16_comma(24, 6, g_totalXP, TEXT_GOLD);
     {
-        u8 c = text_draw_u16(24, 7, g_streak, TEXT_ORANGE);
-        text_draw(c, 7, " DAYS", TEXT_ORANGE);
+        u8 c = text_draw_u16(24, 8, g_streak, TEXT_ORANGE);
+        text_draw(c, 8, " DAYS", TEXT_ORANGE);
     }
 
-    text_draw_u16(24, 10, g_statKnowledge, TEXT_CREAM);
-    text_draw_u16(24, 12, g_statCoding, TEXT_CREAM);
-    text_draw_u16(24, 14, g_statCreativity, TEXT_CREAM);
-    text_draw_u16(24, 15, g_statDiscipline, TEXT_CREAM);
-    text_draw_u16(24, 17, g_statExploration, TEXT_CREAM);
+    text_draw_u16(24, 11, g_statKnowledge, TEXT_CREAM);
+    text_draw_u16(24, 13, g_statCoding, TEXT_CREAM);
+    text_draw_u16(24, 15, g_statCreativity, TEXT_CREAM);
+    text_draw_u16(24, 17, g_statDiscipline, TEXT_CREAM);
+    text_draw_u16(24, 19, g_statExploration, TEXT_CREAM);
 
     text_commit();
 }
