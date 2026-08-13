@@ -3,14 +3,19 @@
 
 #include <snes.h>
 
-// Loads BLAZE and places the player at the room's starting spot.
+#define PLAYER_W 16
+#define PLAYER_H 32
+
+// Loads BLAZE and places the player at the town's spawn spot.
 void player_init(void);
 
-// Applies D-pad movement for one frame, clamped to the room's walls, and
-// updates BLAZE's on-screen position.
-void player_update(u16 padHeld);
+// Applies D-pad movement for one frame (axis-separated so the player
+// slides along walls instead of sticking), collides against town
+// scenery, and advances the walk-leg animation. No-op while frozen
+// (dialogue open).
+void player_update(u16 padHeld, bool frozen);
 
-u16 player_get_x(void);
-u16 player_get_y(void);
+s16 player_get_x(void);
+s16 player_get_y(void);
 
 #endif // PLAYER_H

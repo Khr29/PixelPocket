@@ -1,55 +1,49 @@
 /*---------------------------------------------------------------------------------
-    DEDDY PARTY -- first playable prototype (SNES)
+    DEDDY PARTY -- HOME/TOWN visual prototype (SNES)
 
-    BLAZE walks around a small checkered party room (D-pad, wall collision)
-    and can walk up to CAPTAIN CLUTCH and press A to complete the party.
-    No title screen, no character select, no menus/scoring yet -- just the
-    smallest possible playable loop: move, interact, win.
+    BLAZE walks around a small, handcrafted town square (D-pad, scenery
+    collision), can talk to CAPTAIN with A, and can inspect the quest
+    board with A. This is a visual/movement prototype only: no quest
+    system, no AI, no additional areas yet (see CLAUDE.md).
 ---------------------------------------------------------------------------------*/
 #include <snes.h>
 #include "player.h"
-#include "party.h"
 #include "character.h"
-
-#define BACKDROP_COLOR RGB5(9, 11, 16)
-
-static void show_win_screen(void) {
-    characters_hide_all();
-
-    consoleInitDefaultText(0);
-    bgSetGfxPtr(0, 0x3000);
-    bgSetMapPtr(0, 0x6800, SC_32x32);
-    setPaletteColor(0, BACKDROP_COLOR);
-
-    consoleDrawText(7, 11, "PARTY COMPLETE!");
-    consoleDrawText(2, 14, "You found Captain Clutch");
-    consoleDrawText(4, 17, "and started the party.");
-    consoleDrawText(4, 21, "Press B to play again");
-}
+#include "town.h"
+#include "dialogue.h"
 
 int main(void) {
+    town_init();
+    player_init();
+    setScreenOn();
+
     while (1) {
-        party_init();
-        player_init();
-        setScreenOn();
+        u16 pad;
+        u16 padPressed;
+        bool open = dialogue_is_open();
 
-        while (1) {
-            WaitForVBlank();
+        WaitForVBlank();
 
-            u16 pad = padsCurrent(0);
-            player_update(pad);
+        pad = padsCurrent(0);
+        padPressed = padsDown(0);
 
-            if (party_check_interaction(player_get_x(), player_get_y(), (padsDown(0) & KEY_A) != 0)) {
-                break;
+        town_update_glow();
+        player_update(pad, open);
+        captain_update();
+        oamUpdate();
+
+        if (open) {
+            if (padPressed & KEY_A) {
+                dialogue_hide();
             }
-        }
+        } else if (padPressed & KEY_A) {
+            s16 px = player_get_x();
+            s16 py = player_get_y();
 
-        show_win_screen();
-
-        while (1) {
-            WaitForVBlank();
-            if (padsDown(0) & KEY_B) {
-                break;
+            if (town_near_npc(px, py)) {
+                dialogue_show(DIALOGUE_NPC);
+            } else if (town_near_board(px, py)) {
+                dialogue_show(DIALOGUE_BOARD);
             }
         }
     }

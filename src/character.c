@@ -1,47 +1,65 @@
 #include <snes.h>
 #include "character.h"
-#include "../assets/characters/blaze/blaze.inc"
+#include "../assets/characters/blaze/blaze_idle.inc"
+#include "../assets/characters/blaze/blaze_walk.inc"
 #include "../assets/characters/captain/captain.inc"
-
-// The SNES has one shared OBJSEL register selecting the OBJ tile name
-// base, so only the FIRST sprite is loaded via oamInitGfxSet (which sets
-// it up). Every other sprite is uploaded directly with dmaCopyVram/
-// dmaCopyCGram at an address relative to that same base, per the pattern
-// pvsneslib's own multi-sprite examples use (see snes-examples/graphics/
-// Sprites/ObjectSize).
 
 #define BLAZE_OAM_ID 0
 #define BLAZE_PALETTE_ENTRY 0
-#define BLAZE_TILE_ADDR 0x0000
+#define BLAZE_IDLE_ADDR 0x0000
+#define BLAZE_WALK_ADDR 0x0100 // past BLAZE_IDLE's 32x32 = 16 subtiles = 0x100 words
 
-#define CAPTAIN_OAM_ID 1
+#define CAPTAIN_OAM_ID 4 // oamSet/oamSetEx "id" is a byte offset into OAM (4 bytes/sprite), not a plain sprite index -- see snes-examples/graphics/Sprites/ObjectSize
 #define CAPTAIN_PALETTE_ENTRY 1
-#define CAPTAIN_TILE_ADDR 0x0400 // past BLAZE's 64 tiles (64 tiles * 16 words/tile)
+#define CAPTAIN_ADDR 0x0200 // past BLAZE_WALK's 32x32
+
+// Idle bob: a 1px vertical drift, slow enough to read as "breathing" not
+// jitter -- CLAUDE.md asks for subtle animation, not attention-grabbing.
+#define BOB_HALF_PERIOD_FRAMES 24
 
 void blaze_load(void) {
+    // First upload establishes the shared OBJSEL size pair (OBJ_SIZE32_L64,
+    // i.e. large = 32x32) and BLAZE's palette; the walk frame reuses that
+    // same palette, so it only needs its tile pixel data DMA'd in.
     oamInitGfxSet(
-        &blaze_til, (u16)(&blaze_tilend - &blaze_til),
-        &blaze_pal, (u16)(&blaze_palend - &blaze_pal),
-        BLAZE_PALETTE_ENTRY, BLAZE_TILE_ADDR, OBJ_SIZE32_L64
+        &blaze_idle_til, (u16)(&blaze_idle_tilend - &blaze_idle_til),
+        &blaze_idle_pal, (u16)(&blaze_idle_palend - &blaze_idle_pal),
+        BLAZE_PALETTE_ENTRY, BLAZE_IDLE_ADDR, OBJ_SIZE32_L64
     );
+    dmaCopyVram((u8 *)&blaze_walk_til, BLAZE_WALK_ADDR, (u16)(&blaze_walk_tilend - &blaze_walk_til));
 }
 
-void blaze_place(u16 x, u16 y) {
-    oamSet(BLAZE_OAM_ID, x, y, 3, 0, 0, BLAZE_TILE_ADDR / 16, BLAZE_PALETTE_ENTRY);
-    oamSetEx(BLAZE_OAM_ID, OBJ_LARGE, OBJ_SHOW);
+void blaze_place(s16 x, s16 y, bool walkFrame) {
+    u16 addr = walkFrame ? BLAZE_WALK_ADDR : BLAZE_IDLE_ADDR;
+
+    oamSet(BLAZE_OAM_ID, (u16)x, (u16)y, 2, 0, 0, addr / 16, BLAZE_PALETTE_ENTRY);
+    oamSetEx(BLAZE_OAM_ID, OBJ_SMALL, OBJ_SHOW);
 }
 
 void captain_load(void) {
-    dmaCopyVram((u8 *)&captain_til, CAPTAIN_TILE_ADDR, (u16)(&captain_tilend - &captain_til));
+    dmaCopyVram((u8 *)&captain_til, CAPTAIN_ADDR, (u16)(&captain_tilend - &captain_til));
     dmaCopyCGram((u8 *)&captain_pal, 128 + CAPTAIN_PALETTE_ENTRY * 16, (u16)(&captain_palend - &captain_pal));
 }
 
-void captain_place(u16 x, u16 y) {
-    oamSet(CAPTAIN_OAM_ID, x, y, 2, 0, 0, CAPTAIN_TILE_ADDR / 16, CAPTAIN_PALETTE_ENTRY);
-    oamSetEx(CAPTAIN_OAM_ID, OBJ_LARGE, OBJ_SHOW);
+static s16 captainBaseX, captainBaseY;
+static u16 captainBobTimer;
+static bool captainBobUp;
+
+void captain_place(s16 x, s16 y) {
+    captainBaseX = x;
+    captainBaseY = y;
+    captainBobTimer = 0;
+    captainBobUp = false;
+
+    oamSet(CAPTAIN_OAM_ID, (u16)x, (u16)y, 2, 0, 0, CAPTAIN_ADDR / 16, CAPTAIN_PALETTE_ENTRY);
+    oamSetEx(CAPTAIN_OAM_ID, OBJ_SMALL, OBJ_SHOW);
 }
 
-void characters_hide_all(void) {
-    oamSetVisible(BLAZE_OAM_ID, OBJ_HIDE);
-    oamSetVisible(CAPTAIN_OAM_ID, OBJ_HIDE);
+void captain_update(void) {
+    captainBobTimer++;
+    if (captainBobTimer >= BOB_HALF_PERIOD_FRAMES) {
+        captainBobTimer = 0;
+        captainBobUp = !captainBobUp;
+    }
+    oamSetXY(CAPTAIN_OAM_ID, (u16)captainBaseX, (u16)(captainBobUp ? captainBaseY - 1 : captainBaseY));
 }

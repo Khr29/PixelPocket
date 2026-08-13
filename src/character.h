@@ -3,26 +3,29 @@
 
 #include <snes.h>
 
-// Roster sprite art. Each character is one 64x64 OBJ sprite, native SNES
-// 4bpp tile/palette data converted from its assets/characters/<name>/*.png
-// by gfx4snes at build time (see data.asm and the Makefile's *.pic rules).
+// Roster sprite art. Each character is a single 32x32 OBJ (one OAM entry)
+// with the actual ~16x32 chibi art left-aligned in that box -- the small
+// SNES-RPG-protagonist scale from CLAUDE.md, not the original 64x64 art.
+// BLAZE has a second "walk" frame (mid-stride legs) so walking can
+// alternate between two frames instead of sliding.
 //
-// VRAM/CGRAM layout: each character gets its own non-overlapping tile
-// address and OBJ palette bank so more than one can be shown at once.
+// VRAM/CGRAM layout: each character gets its own non-overlapping OBJ tile
+// address and OBJ palette bank so both can be shown at once.
 //   BLAZE   -> OBJ tile word 0x0000, palette bank 0 (the player)
-//   CAPTAIN -> OBJ tile word 0x0400, palette bank 1 (the party-room NPC)
+//   CAPTAIN -> OBJ tile word 0x0200, palette bank 1 (the town NPC)
 
 // Uploads BLAZE's tiles/palette to VRAM/CGRAM. Call once at startup.
 void blaze_load(void);
-// Places (and shows) BLAZE at OAM slot 0, top-left corner at (x, y).
-void blaze_place(u16 x, u16 y);
+// Places (and shows) BLAZE with top-left corner at (x, y).
+// walkFrame selects the mid-stride legs frame instead of the idle stance.
+void blaze_place(s16 x, s16 y, bool walkFrame);
 
 // Uploads CAPTAIN's tiles/palette to VRAM/CGRAM. Call once at startup.
 void captain_load(void);
-// Places (and shows) CAPTAIN at OAM slot 1, top-left corner at (x, y).
-void captain_place(u16 x, u16 y);
-
-// Hides both roster sprites (e.g. before switching to a text-only screen).
-void characters_hide_all(void);
+// Places (and shows) CAPTAIN with top-left corner at (x, y). Also resets
+// the idle-bob animation's base position.
+void captain_place(s16 x, s16 y);
+// Advances CAPTAIN's subtle idle bob. Call once per frame.
+void captain_update(void);
 
 #endif // CHARACTER_H
