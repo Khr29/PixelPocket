@@ -1,13 +1,18 @@
-# DEDDY PARTY (SNES)
+# QUEST DASHBOARD (SNES)
 
-A fictional 16-bit party/comedy game for the Super Nintendo, targeting the
-Anbernic RG35XX Plus's SNES emulator core, developed and tested on PC first.
+A retro daily-quest / personal-progression dashboard for the Super
+Nintendo, targeting the Anbernic RG35XX Plus's SNES emulator core,
+developed and tested on PC first. Not an RPG -- there's no world, no
+character, no movement. It's an information screen: level, XP, streak,
+and today's/side quests, presented as native SNES tiles and pixel art.
 
 ## Status
 
-Character-art foundation only: a single sprite ("MR. T.", a fictional
-parody character) rendered on a plain preview screen. No title screen, no
-party room, no gameplay yet.
+Main dashboard screen only: title bar, level/XP panel with a progress bar,
+streak strip, today's-quests preview, side-quests preview, and a
+controller-hint footer. Static (no D-pad navigation yet) -- quest
+selection, quest detail, completed-quests, stats, and settings screens
+are not built yet.
 
 ## Toolchain
 
@@ -39,19 +44,19 @@ export PATH=$PVSNESLIB_HOME/devkitsnes/bin:$PVSNESLIB_HOME/devkitsnes/tools:$PAT
 make
 ```
 
-Produces `DeddyParty.sfc` in the project root.
+Produces `QuestDash.sfc` in the project root.
 
 ```sh
 make clean
 ```
 
-Removes build artifacts, including the `assets/**/*.pic|.pal|.inc` files
-generated from source `.png` art.
+Removes build artifacts, including the `assets/**/*.pic|.pal|.map|.inc`
+files generated from source `.png` art.
 
 ## PC testing (VS Code + Mesen2)
 
 - **Terminal -> Run Task -> Build Game** (`Ctrl+Shift+B`) -- builds
-  `DeddyParty.sfc`.
+  `QuestDash.sfc`.
 - **Terminal -> Run Task -> Run Game** (`Ctrl+Alt+R`) -- builds, then
   launches it in [Mesen2](https://www.mesen.ca/) (installed via
   `winget install SourMesen.Mesen2`).
@@ -61,11 +66,12 @@ generated from source `.png` art.
 ```
 src/       game source (.c/.h)
 assets/
-  characters/<name>/  source .png art; gfx4snes-generated .pic/.pal/.inc
-                       land alongside it (gitignored, rebuilt from the .png)
+  ui/dashboard/  dashboard.png (the whole screen, hand/procedurally
+                 authored as one picture) + gfx4snes-generated
+                 .pic/.pal/.map/.inc (gitignored, rebuilt from the .png)
 data.asm   hand-written WLA-DX wrapper that incbins the converted
-           character art into the ROM (see comments in the file)
-Makefile   PVSnesLib snes_rules-based build; ROMNAME=DeddyParty
+           dashboard art into the ROM (see comments in the file)
+Makefile   PVSnesLib snes_rules-based build; ROMNAME=QuestDash
 ```
 
 No separate `include/` or `build/` directories: PVSnesLib's own example
@@ -73,19 +79,24 @@ projects keep headers alongside their `.c` files and don't use an
 intermediate build directory (`.obj` files sit next to their sources), so
 the layout follows that convention instead.
 
-## Adding a new character's art
+## Adding a new full-screen picture
 
-1. Author a <=16-color indexed PNG (palette index 0 = background; SNES OBJ
-   hardware treats it as transparent regardless of its RGB value) sized to
-   a native OBJ dimension (e.g. 64x64) under `assets/characters/<name>/`.
-2. Add a `Makefile` rule for it, mirroring the `trump.pic` rule.
-3. Add a wrapper section to `data.asm` (or a new `.asm` file in the project
-   root) with `.incbin` lines for the generated `.pic`/`.pal`, mirroring
-   the existing `trump_til`/`trump_pal` labels.
-4. `#include` the generated `.inc` header from a `.c` file and call
-   `oamInitGfxSet`/`oamSet` (see `src/character.c`).
+The dashboard (and any future screen -- quest list, quest detail, stats,
+settings) is authored as a single fully pre-rendered picture rather than
+built from a runtime bitmap-font/text engine: draw the whole 256x224
+screen (panels, borders, icons, pixel text) as one <=16-color indexed PNG,
+convert it with `gfx4snes -s 8 -o 16 -u 16 -e <bg-palette-row> -p -m`, and
+`bgInitTileSet`/`bgInitMapSet` it onto a BG layer. See
+`assets/ui/dashboard/dashboard.png` and `src/dashboard.c`.
+
+1. Author the PNG under `assets/ui/<screen>/<screen>.png`.
+2. Add a `Makefile` rule for it, mirroring the `dashboard.pic` rule.
+3. Add a wrapper section to `data.asm` with `.incbin` lines for the
+   generated `.pic`/`.map`/`.pal`, mirroring the `.rodashboard` section.
+4. `#include` the generated `.inc` header and call
+   `bgInitTileSet`/`bgInitMapSet` (see `src/dashboard.c`).
 
 ## Testing on hardware
 
-Copy `DeddyParty.sfc` to the ROMs folder on the RG35XX Plus's SD card and
+Copy `QuestDash.sfc` to the ROMs folder on the RG35XX Plus's SD card and
 launch it with the stock SNES emulator.

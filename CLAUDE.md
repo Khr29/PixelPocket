@@ -1,355 +1,118 @@
 ==================================================
-VISUAL DESIGN — AUTHENTIC OLD-SCHOOL SNES RPG
+PROJECT IDENTITY -- READ THIS FIRST
 ==================================================
 
-The game MUST visually feel like an authentic 1990s SNES RPG.
+This project is a RETRO DAILY QUEST DASHBOARD: a personal progression /
+side-quest tracker presented as a beautiful native SNES interface.
 
-Do NOT make it look like a modern pixel-art game that simply uses a low resolution.
+It is explicitly NOT, and must never become:
 
-The player should immediately feel:
+- an RPG world, town, house, or explorable map
+- a character-movement / walking-around game
+- a game with a player avatar or any NPC
+- a game with character portraits or faces on screen
+- combat, character selection, or a "Deddy Party" style cast
 
-"This looks like an old SNES cartridge game."
+There is NO character movement and NO explorable world. The player opens
+the game and immediately sees the dashboard. All navigation is UI
+navigation (D-pad moves a selection, A selects, B goes back, START opens
+a menu) -- never a D-pad-walks-a-sprite-around-a-map interaction.
 
-DESIGN DIRECTION
-----------------
+If a future instruction seems to reintroduce a world/character/NPC/town
+concept, treat CLAUDE.md as taking precedence unless the user explicitly
+overrides it in that conversation.
 
-Aim for the visual quality and design philosophy of classic 16-bit RPGs.
+==================================================
+VISUAL STYLE
+==================================================
 
-Use:
+SNES-native technology underneath; a clean, modern information hierarchy
+on top. Think: "a futuristic productivity dashboard that somehow exists
+inside a SNES cartridge."
 
-- chunky pixel art
-- strong pixel silhouettes
-- limited color palettes
-- carefully selected colors
-- hard pixel edges
-- 8/16-bit style shading
-- small animated details
-- tile-based environments
-- classic SNES-style menus
-- decorative borders
-- pixel icons
-- readable bitmap fonts
-- subtle screen transitions
+Do NOT make it look like:
+- a web dashboard, React app, mobile productivity app, or SaaS product
+- glassmorphism or modern rounded-card UI
+- an ugly primitive 1990s game menu, a generic Final Fantasy clone, or a
+  top-down RPG
 
-Avoid:
+Everything is still pixel-perfect: hard pixel edges, no anti-aliasing,
+pixel fonts, pixel icons, native SNES tiles/palettes. The sophistication
+comes from layout discipline, restrained color, and clean typography --
+not from softening the pixel-art technique.
 
-- modern gradients
-- smooth vector shapes
-- anti-aliasing
-- excessive transparency
-- modern minimalist UI
-- giant modern fonts
-- photorealistic assets
-- overly detailed graphics that don't fit the SNES aesthetic
+Visual identity comes from panels, icons, borders, typography, progress
+bars, and small decorative pixel-art elements. NOT from characters,
+portraits, or avatars.
 
 ==================================================
 COLOR PALETTE
 ==================================================
 
-Use a warm, slightly nostalgic SNES palette.
+A sophisticated, restrained palette -- dark colors for structure, bright
+colors only for important information. Never scatter random saturated
+colors around.
 
-Different areas should have their own palette identity.
-
-HOME:
-warm brown / cream / green
-
-LIBRARY:
-dark blue / purple / gold
-
-WORKSHOP:
-orange / brown / teal
-
-CITY:
-cyan / blue / gray
-
-NIGHT:
-dark blue / purple / muted colors
-
-Do not use hundreds of unrelated colors.
-
-Reuse palettes wherever possible.
+- Background: deep navy / midnight blue
+- Panels: dark blue / blue-gray
+- Primary accent: gold / warm yellow (XP, key numbers, borders)
+- Secondary accent: teal / cyan
+- Success: green
+- Streak: orange
+- Text: warm white / cream (primary), muted cream-gray (secondary)
 
 ==================================================
-WORLD DESIGN
+SCREENS
 ==================================================
 
-The world should be built from reusable SNES tiles.
+Planned screens (build incrementally, confirm each before moving on):
 
-For example:
+1. DASHBOARD (built) -- level, total XP, XP-to-next-level bar, streak,
+   today's-quests preview, side-quests preview, footer button legend.
+2. TODAY'S QUESTS -- full navigable list, D-pad + A/B.
+3. SIDE QUESTS -- full navigable list, categorized (READING, LEARNING,
+   CODING, CREATIVE, LIFE, EXPLORATION).
+4. QUEST DETAILS -- name, category, difficulty (star rating), reward,
+   [A] COMPLETE / [B] BACK.
+5. COMPLETED QUESTS
+6. STATS
+7. SETTINGS
 
-GROUND
-████████████
-
-WALL
-▓▓▓▓▓▓▓▓▓▓▓▓
-
-PATH
-░░░░░░░░░░░░
-
-GRASS
-· · · · · · ·
-
-WATER
-≈ ≈ ≈ ≈ ≈ ≈
-
-Each environment should have:
-
-- walls
-- floors
-- paths
-- decorations
-- doors
-- signs
-- furniture
-- small environmental details
-
-Make the world feel handcrafted.
-
-Do NOT make large empty areas.
+Never add a world map, town, house, NPC, character movement, or combat
+screen.
 
 ==================================================
-SMALL DETAILS
+QUEST DATA
 ==================================================
 
-Add tiny details that make the world feel alive.
-
-Examples:
-
-- water gently animates
-- candles flicker subtly
-- NPCs have simple idle animations
-- flags move
-- small birds occasionally cross the sky
-- lamps glow
-- leaves move
-- computer screens animate
-- small particles appear occasionally
-
-Keep animations subtle.
-
-No screen-wide flashing.
+Quests are data-driven so an external AI generator can eventually produce
+them. Every quest has: ID, NAME, CATEGORY, DESCRIPTION, DIFFICULTY
+(1-5 stars), XP, STAT_REWARD. Until the AI generator exists, use local
+sample quest data (see `src/quest_data.h`).
 
 ==================================================
-PLAYER CHARACTER
+SNES IMPLEMENTATION
 ==================================================
 
-The player should look like a classic SNES RPG protagonist.
+Keep using PVSnesLib. Build the interface from native SNES background
+tiles, tilemaps, and palettes -- not a framebuffer-style modern
+UI-in-a-box-of-pixels approach.
 
-Use:
+Static/mostly-static screens (like the current dashboard) are authored as
+one fully pre-rendered <=16-color PNG per screen (panels, borders, icons,
+and pixel text all baked in) and converted with gfx4snes -- see
+`assets/ui/dashboard/dashboard.png` and `src/dashboard.c`. This sidesteps
+needing a runtime bitmap-font/text engine for content that doesn't change
+at runtime. Once a screen needs genuinely dynamic text (e.g. live XP
+numbers, a movable list cursor), that screen will need an actual font/text
+rendering approach -- decide that per-screen rather than retrofitting the
+whole project.
 
-- approximately 16×24 or 16×32 pixel character proportions
-- 2–4 walking frames
-- idle frame
-- simple interaction animation
-
-The sprite should have:
-
-HEAD
-BODY
-ARMS
-LEGS
-SHADOW
-
-Use pixel clusters rather than drawing individual pixels randomly.
-
-The player should be immediately readable against the background.
-
-==================================================
-NPC DESIGN
-==================================================
-
-NPCs should have distinct silhouettes.
-
-Do not create 20 identical NPCs.
-
-Reuse base sprites but change:
-
-- hair
-- clothing
-- colors
-- accessories
-- height
-
-Each NPC should have a simple idle animation.
-
-==================================================
-QUEST BOARD UI
-==================================================
-
-The quest board should look like a classic SNES RPG menu.
-
-Example:
-
-╔══════════════════════════════╗
-║        QUEST BOARD           ║
-╠══════════════════════════════╣
-║                              ║
-║  ★ MAIN QUEST                ║
-║                              ║
-║  Learn Something New         ║
-║  ★★★☆☆       +80 XP          ║
-║                              ║
-║  ──────────────────────────  ║
-║                              ║
-║  ★ SIDE QUESTS               ║
-║                              ║
-║  ▸ Read 10 Pages             ║
-║    ★★☆☆☆       +40 XP       ║
-║                              ║
-║    Code for 20 Minutes       ║
-║    ★★★☆☆       +80 XP       ║
-║                              ║
-║    Clean Your Desk           ║
-║    ★☆☆☆☆       +20 XP       ║
-║                              ║
-╚══════════════════════════════╝
-
-Use a decorative pixel border.
-
-The UI should look like something that could have existed on a
-1990s SNES RPG cartridge.
-
-==================================================
-DIALOGUE BOX
-==================================================
-
-NPC dialogue should use a classic RPG dialogue box.
-
-Example:
-
-┌────────────────────────────────┐
-│                                │
-│  Welcome, traveler!            │
-│                                │
-│  The quest board has something │
-│  waiting for you.              │
-│                                │
-│                         ▼      │
-└────────────────────────────────┘
-
-Use a bitmap/pixel font.
-
-Text should appear character-by-character if the SNES performance
-allows it.
-
-Allow the player to press A to instantly finish the current line.
-
-==================================================
-MENUS
-==================================================
-
-Use classic SNES RPG menu conventions:
-
-- dark background
-- bright text
-- pixel borders
-- small icons
-- highlighted selection
-- arrow cursor
-- simple transitions
-
-Example:
-
-┌──────────────────────────────┐
-│ KHALED                       │
-│ LV 07       XP 420/600       │
-├──────────────────────────────┤
-│                              │
-│  QUESTS                      │
-│  INVENTORY                   │
-│  STATS                       │
-│  WORLD                       │
-│  SAVE                        │
-│                              │
-└──────────────────────────────┘
-
-The selected option should have a classic animated arrow:
-
-▸ QUESTS
-  INVENTORY
-  STATS
-
-Do not make the cursor blink rapidly.
-
-==================================================
-TITLE SCREEN
-==================================================
-
-Eventually create a proper SNES-style title screen.
-
-It should look like a real cartridge game's title screen.
-
-Include:
-
-GAME TITLE
-
-PRESS START
-
-Pixel-art background.
-
-Subtle animation only.
-
-For example:
-
-- moving clouds
-- water animation
-- character idle animation
-- tiny environmental movement
-
-Do NOT make the entire screen flash or blink.
-
-==================================================
-TRANSITIONS
-==================================================
-
-Use classic retro transitions where practical:
-
-- fade to black
-- horizontal wipe
-- simple palette transition
-- screen scroll
-
-Keep transitions short.
-
-Avoid modern cinematic effects.
-
-==================================================
-OVERALL QUALITY BAR
-==================================================
-
-The final visual goal is:
-
-"Someone sees a screenshot and thinks this could genuinely
-have been released as a SNES game in the 1990s."
-
-Prioritize consistency over complexity.
-
-A small beautifully designed room is better than a huge empty map.
-
-A small polished sprite is better than a detailed but visually inconsistent sprite.
-
-A simple excellent menu is better than a complicated modern UI.
-
-Everything — sprites, tiles, UI, fonts, colors, animations, and
-menus — must feel like they belong to the SAME SNES game.
-
-==================================================
-IMPORTANT TECHNICAL RULE
-==================================================
-
-Do not sacrifice the SNES limitations to achieve the visual style.
-
-Work WITH the hardware:
-
-- tile-based backgrounds
-- hardware sprites/OBJs
-- limited palettes
-- VRAM constraints
-- OAM limits
-- compact assets
-- reusable tiles
-
-If an effect cannot be done cleanly on the SNES, simplify it rather
-than attempting a modern rendering technique.
-
-The result should look intentionally retro, not technically broken.
+Two PVSnesLib gotchas hit while building this project (see this repo's
+Claude memory for full detail if debugging OAM/BG issues again):
+- `oamSet`/`oamSetEx`/`oamSetXY`'s `id` parameter is a byte offset into
+  OAM (4 bytes/sprite), not a plain sprite index -- the Nth sprite's id is
+  `N*4`.
+- `bgInitTileSet`/`bgInitMapSet` force the screen blank as a VRAM-write
+  safety measure and don't restore it; call `setScreenOn()` again
+  afterward if they run after the game's initial `setScreenOn()`.

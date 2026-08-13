@@ -3,88 +3,81 @@
 ; generated assets/**/*_data.as files); this section wrapper is the one
 ; hand-written piece pvsneslib expects per asset, same convention used by
 ; the pvsneslib example projects.
-;
-; MR. T. (assets/characters/trump/) is still on disk, just not linked --
-; reviving it later is a matter of adding its section back, no art rework.
 
 .include "hdr.asm"
 
-.section ".roblazeidle" superfree
+.section ".rofont" superfree
 
-blaze_idle_til:
-.incbin "assets/characters/blaze/blaze_idle.pic"
-blaze_idle_tilend:
+font_til:
+.incbin "assets/ui/font/font.pic"
+font_tilend:
 
-blaze_idle_pal:
-.incbin "assets/characters/blaze/blaze_idle.pal"
-blaze_idle_palend:
-
-.ends
-
-.section ".roblazewalk" superfree
-
-blaze_walk_til:
-.incbin "assets/characters/blaze/blaze_walk.pic"
-blaze_walk_tilend:
+font_pal:
+.incbin "assets/ui/font/font.pal"
+font_palend:
 
 .ends
 
-.section ".rocaptain" superfree
+.section ".rodashboard" superfree
 
-captain_til:
-.incbin "assets/characters/captain/captain.pic"
-captain_tilend:
+dashboard_til:
+.incbin "assets/ui/dashboard/dashboard.pic"
+dashboard_tilend:
 
-captain_pal:
-.incbin "assets/characters/captain/captain.pal"
-captain_palend:
+dashboard_map:
+.incbin "assets/ui/dashboard/dashboard.map"
+dashboard_mapend:
 
-.ends
-
-.section ".rotown" superfree
-
-town_til:
-.incbin "assets/backgrounds/town/town.pic"
-town_tilend:
-
-town_map:
-.incbin "assets/backgrounds/town/town.map"
-town_mapend:
-
-town_pal:
-.incbin "assets/backgrounds/town/town.pal"
-town_palend:
+dashboard_pal:
+.incbin "assets/ui/dashboard/dashboard.pal"
+dashboard_palend:
 
 .ends
 
-.section ".rodlgnpc" superfree
+.section ".roquestdetails" superfree
 
-dlgnpc_til:
-.incbin "assets/ui/dialogue/dialogue_npc.pic"
-dlgnpc_tilend:
+questdetails_til:
+.incbin "assets/ui/quest_details/quest_details.pic"
+questdetails_tilend:
 
-dlgnpc_map:
-.incbin "assets/ui/dialogue/dialogue_npc.map"
-dlgnpc_mapend:
+questdetails_map:
+.incbin "assets/ui/quest_details/quest_details.map"
+questdetails_mapend:
 
-dlgnpc_pal:
-.incbin "assets/ui/dialogue/dialogue_npc.pal"
-dlgnpc_palend:
+questdetails_pal:
+.incbin "assets/ui/quest_details/quest_details.pal"
+questdetails_palend:
 
 .ends
 
-.section ".rodlgboard" superfree
+.section ".roquestcomplete" superfree
 
-dlgboard_til:
-.incbin "assets/ui/dialogue/dialogue_board.pic"
-dlgboard_tilend:
+questcomplete_til:
+.incbin "assets/ui/quest_complete/quest_complete.pic"
+questcomplete_tilend:
 
-dlgboard_map:
-.incbin "assets/ui/dialogue/dialogue_board.map"
-dlgboard_mapend:
+questcomplete_map:
+.incbin "assets/ui/quest_complete/quest_complete.map"
+questcomplete_mapend:
 
-dlgboard_pal:
-.incbin "assets/ui/dialogue/dialogue_board.pal"
-dlgboard_palend:
+questcomplete_pal:
+.incbin "assets/ui/quest_complete/quest_complete.pal"
+questcomplete_palend:
+
+.ends
+
+.section ".rostats" superfree
+
+stats_til:
+.incbin "assets/ui/stats/stats.pic"
+stats_tilend:
+
+stats_map:
+.incbin "assets/ui/stats/stats.map"
+stats_mapend:
+
+stats_pal:
+.incbin "assets/ui/stats/stats.pal"
+stats_palend:
 
 .ends

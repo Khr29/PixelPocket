@@ -1,12 +1,12 @@
 #---------------------------------------------------------------------------------
-# DEDDY PARTY -- SNES (PVSnesLib / devkitsnes) build
+# QUEST DASHBOARD -- SNES (PVSnesLib / devkitsnes) build
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(PVSNESLIB_HOME)),)
 $(error "Please set PVSNESLIB_HOME (see README.md)")
 endif
 
-export ROMNAME  := DeddyParty
-export ROMTITLE := DEDDY PARTY
+export ROMNAME  := QuestDash
+export ROMTITLE := QUEST DASHBOARD
 
 include ${PVSNESLIB_HOME}/devkitsnes/snes_rules
 
@@ -16,69 +16,56 @@ all: bitmaps buildWithSummary
 buildActual: $(OFILES) $(ROMNAME).sfc
 
 #---------------------------------------------------------------------------------
-# Art: PNG -> native SNES tiles/palette(/map) via gfx4snes. Output lands next
-# to the source PNG; data.asm incbins it into the ROM.
+# Art: PNG -> native SNES tiles/palette/map via gfx4snes. Output lands next to
+# the source PNG; data.asm incbins it into the ROM.
 #
-# BLAZE and CAPTAIN are each a single self-contained 32x32 OBJ (one
-# gfx4snes block, one OAM entry), with the actual ~16x32 chibi art
-# left-aligned in that 32x32 canvas -- the small SNES-RPG-protagonist
-# scale from CLAUDE.md, much closer to it than the original 64x64 art,
-# while keeping the same single-block-per-sprite pattern the original
-# prototype used successfully (see character.c for VRAM placement).
-# BLAZE has a second frame (mid-stride legs) so walking can alternate
-# between two frames instead of sliding.
-#
-# The town background and the two dialogue overlays are each a full
-# 256x224 picture (-s 8 -m generates the matching tilemap); dialogue
-# overlays are almost entirely palette index 0, which SNES BG hardware
-# always treats as transparent, so the town shows through everywhere
-# except the drawn box.
+# Each screen (BG0) is a fully pre-rendered picture -- panels, borders,
+# icons, and static labels baked in, with blank space left for whatever
+# is dynamic on that screen. All dynamic content (numbers, quest names,
+# cursor, progress bar fill, stars) is drawn at runtime on BG1 using the
+# font tileset + src/text.c, so live data never requires new art.
 #---------------------------------------------------------------------------------
-bitmaps: assets/characters/blaze/blaze_idle.pic assets/characters/blaze/blaze_walk.pic \
-         assets/characters/captain/captain.pic \
-         assets/backgrounds/town/town.pic \
-         assets/ui/dialogue/dialogue_npc.pic assets/ui/dialogue/dialogue_board.pic
+bitmaps: assets/ui/font/font.pic \
+         assets/ui/dashboard/dashboard.pic \
+         assets/ui/quest_details/quest_details.pic \
+         assets/ui/quest_complete/quest_complete.pic \
+         assets/ui/stats/stats.pic
 
-assets/characters/blaze/blaze_idle.pic: assets/characters/blaze/blaze_idle.png
-	@echo convert blaze sprite ... $(notdir $<)
-	$(GFXCONV) -s 32 -o 16 -u 16 -t png -i $<
+# Runtime text font (BG1): a plain 8x8-per-glyph tile strip, no map -- text.c
+# builds its own tilemap in WRAM at runtime and pushes it with bgInitMapSet.
+assets/ui/font/font.pic: assets/ui/font/font.png
+	@echo convert font ... $(notdir $<)
+	$(GFXCONV) -s 8 -o 16 -u 16 -p -t png -i $<
 
-assets/characters/blaze/blaze_walk.pic: assets/characters/blaze/blaze_walk.png
-	@echo convert blaze sprite ... $(notdir $<)
-	$(GFXCONV) -s 32 -o 16 -u 16 -t png -i $<
-
-assets/characters/captain/captain.pic: assets/characters/captain/captain.png
-	@echo convert captain sprite ... $(notdir $<)
-	$(GFXCONV) -s 32 -o 16 -u 16 -t png -i $<
-
-assets/backgrounds/town/town.pic: assets/backgrounds/town/town.png
-	@echo convert town background ... $(notdir $<)
+assets/ui/dashboard/dashboard.pic: assets/ui/dashboard/dashboard.png
+	@echo convert dashboard screen ... $(notdir $<)
 	$(GFXCONV) -s 8 -o 16 -u 16 -e 0 -p -m -t png -i $<
 
-assets/ui/dialogue/dialogue_npc.pic: assets/ui/dialogue/dialogue_npc.png
-	@echo convert NPC dialogue box ... $(notdir $<)
-	$(GFXCONV) -s 8 -o 16 -u 16 -e 1 -p -m -t png -i $<
+assets/ui/quest_details/quest_details.pic: assets/ui/quest_details/quest_details.png
+	@echo convert quest details screen ... $(notdir $<)
+	$(GFXCONV) -s 8 -o 16 -u 16 -e 0 -p -m -t png -i $<
 
-assets/ui/dialogue/dialogue_board.pic: assets/ui/dialogue/dialogue_board.png
-	@echo convert quest board dialogue box ... $(notdir $<)
-	$(GFXCONV) -s 8 -o 16 -u 16 -e 1 -p -m -t png -i $<
+assets/ui/quest_complete/quest_complete.pic: assets/ui/quest_complete/quest_complete.png
+	@echo convert quest complete screen ... $(notdir $<)
+	$(GFXCONV) -s 8 -o 16 -u 16 -e 0 -p -m -t png -i $<
+
+assets/ui/stats/stats.pic: assets/ui/stats/stats.png
+	@echo convert stats screen ... $(notdir $<)
+	$(GFXCONV) -s 8 -o 16 -u 16 -e 0 -p -m -t png -i $<
 
 #---------------------------------------------------------------------------------
 clean: cleanBuildRes cleanRom cleanGfx cleanLogs
-	@rm -f assets/characters/blaze/blaze_idle.pic assets/characters/blaze/blaze_idle.pal \
-	       assets/characters/blaze/blaze_idle.inc assets/characters/blaze/blaze_idle_data.as \
-	       assets/characters/blaze/blaze_walk.pic assets/characters/blaze/blaze_walk.pal \
-	       assets/characters/blaze/blaze_walk.inc assets/characters/blaze/blaze_walk_data.as \
-	       assets/characters/captain/captain.pic assets/characters/captain/captain.pal \
-	       assets/characters/captain/captain.inc assets/characters/captain/captain_data.as \
-	       assets/backgrounds/town/town.pic assets/backgrounds/town/town.pal \
-	       assets/backgrounds/town/town.map assets/backgrounds/town/town.inc \
-	       assets/backgrounds/town/town_data.as \
-	       assets/ui/dialogue/dialogue_npc.pic assets/ui/dialogue/dialogue_npc.pal \
-	       assets/ui/dialogue/dialogue_npc.map assets/ui/dialogue/dialogue_npc.inc \
-	       assets/ui/dialogue/dialogue_npc_data.as \
-	       assets/ui/dialogue/dialogue_board.pic assets/ui/dialogue/dialogue_board.pal \
-	       assets/ui/dialogue/dialogue_board.map assets/ui/dialogue/dialogue_board.inc \
-	       assets/ui/dialogue/dialogue_board_data.as \
-	       assets/characters/trump/trump.pic assets/characters/trump/trump.pal \
-	       assets/characters/trump/trump.inc assets/characters/trump/trump_data.as
+	@rm -f assets/ui/font/font.pic assets/ui/font/font.pal \
+	       assets/ui/font/font.inc assets/ui/font/font_data.as \
+	       assets/ui/dashboard/dashboard.pic assets/ui/dashboard/dashboard.pal \
+	       assets/ui/dashboard/dashboard.map assets/ui/dashboard/dashboard.inc \
+	       assets/ui/dashboard/dashboard_data.as \
+	       assets/ui/quest_details/quest_details.pic assets/ui/quest_details/quest_details.pal \
+	       assets/ui/quest_details/quest_details.map assets/ui/quest_details/quest_details.inc \
+	       assets/ui/quest_details/quest_details_data.as \
+	       assets/ui/quest_complete/quest_complete.pic assets/ui/quest_complete/quest_complete.pal \
+	       assets/ui/quest_complete/quest_complete.map assets/ui/quest_complete/quest_complete.inc \
+	       assets/ui/quest_complete/quest_complete_data.as \
+	       assets/ui/stats/stats.pic assets/ui/stats/stats.pal \
+	       assets/ui/stats/stats.map assets/ui/stats/stats.inc \
+	       assets/ui/stats/stats_data.as

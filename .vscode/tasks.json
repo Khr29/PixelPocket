@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"label": "Build Game",
-			"detail": "Builds DeddyParty.sfc via the pvsneslib/devkitsnes Makefile.",
+			"detail": "Builds QuestDash.sfc via the pvsneslib/devkitsnes Makefile.",
 			"type": "shell",
 			"command": "C:\\devkitPro\\msys2\\usr\\bin\\bash.exe",
 			"args": [
@@ -26,13 +26,13 @@
 		},
 		{
 			"label": "Run Game",
-			"detail": "Builds the ROM, verifies DeddyParty.sfc exists, then launches it in Mesen2.",
+			"detail": "Builds the ROM, verifies QuestDash.sfc exists, then launches it in Mesen2.",
 			"type": "shell",
 			"command": "powershell.exe",
 			"args": [
 				"-NoProfile",
 				"-Command",
-				"if (!(Test-Path '${workspaceFolder}\\DeddyParty.sfc')) { Write-Error 'DeddyParty.sfc was not found - the build must have failed.'; exit 1 }; Start-Process -FilePath \"$env:LOCALAPPDATA\\Microsoft\\WinGet\\Packages\\SourMesen.Mesen2_Microsoft.Winget.Source_8wekyb3d8bbwe\\Mesen.exe\" -ArgumentList '${workspaceFolder}\\DeddyParty.sfc'"
+				"if (!(Test-Path '${workspaceFolder}\\QuestDash.sfc')) { Write-Error 'QuestDash.sfc was not found - the build must have failed.'; exit 1 }; Start-Process -FilePath \"$env:LOCALAPPDATA\\Microsoft\\WinGet\\Packages\\SourMesen.Mesen2_Microsoft.Winget.Source_8wekyb3d8bbwe\\Mesen.exe\" -ArgumentList '${workspaceFolder}\\QuestDash.sfc'"
 			],
 			"dependsOn": "Build Game",
 			"dependsOrder": "sequence",
