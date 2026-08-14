@@ -1,0 +1,16 @@
+0 sky
+1 sky_star
+2 pyramid_far
+3 cloud
+4 ground_top
+5 ground_fill
+6 ground_edgeL
+7 ground_edgeR
+8 stone_top
+9 stone_fill
+10 pillar_top
+11 pillar_shaft
+12 water_top
+13 water_fill
+14 statue
+15 tomb_door

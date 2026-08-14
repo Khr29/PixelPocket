@@ -5,8 +5,8 @@ extern char font_til, font_tilend;
 extern char font_pal, font_palend;
 
 #define TEXT_BG 1
-#define TEXT_TILE_ADDR 0x5000
-#define TEXT_MAP_ADDR 0x7000
+#define TEXT_TILE_ADDR 0x6400
+#define TEXT_MAP_ADDR 0x6C00
 #define TEXT_MAP_COLS 32
 #define TEXT_MAP_ROWS 32
 #define TEXT_BLANK_TILE 36 // space glyph -- see FONT_CHARS order below

@@ -18,66 +18,130 @@ font_palend:
 
 .ends
 
-.section ".rodashboard" superfree
+.section ".rotitle" superfree
 
-dashboard_til:
-.incbin "assets/ui/dashboard/dashboard.pic"
-dashboard_tilend:
+title_til:
+.incbin "assets/ui/title/title.pic"
+title_tilend:
 
-dashboard_map:
-.incbin "assets/ui/dashboard/dashboard.map"
-dashboard_mapend:
+title_map:
+.incbin "assets/ui/title/title.map"
+title_mapend:
 
-dashboard_pal:
-.incbin "assets/ui/dashboard/dashboard.pal"
-dashboard_palend:
-
-.ends
-
-.section ".roquestdetails" superfree
-
-questdetails_til:
-.incbin "assets/ui/quest_details/quest_details.pic"
-questdetails_tilend:
-
-questdetails_map:
-.incbin "assets/ui/quest_details/quest_details.map"
-questdetails_mapend:
-
-questdetails_pal:
-.incbin "assets/ui/quest_details/quest_details.pal"
-questdetails_palend:
+title_pal:
+.incbin "assets/ui/title/title.pal"
+title_palend:
 
 .ends
 
-.section ".roquestcomplete" superfree
+.section ".rointro" superfree
 
-questcomplete_til:
-.incbin "assets/ui/quest_complete/quest_complete.pic"
-questcomplete_tilend:
+intro_til:
+.incbin "assets/ui/intro/intro.pic"
+intro_tilend:
 
-questcomplete_map:
-.incbin "assets/ui/quest_complete/quest_complete.map"
-questcomplete_mapend:
+intro_map:
+.incbin "assets/ui/intro/intro.map"
+intro_mapend:
 
-questcomplete_pal:
-.incbin "assets/ui/quest_complete/quest_complete.pal"
-questcomplete_palend:
+intro_pal:
+.incbin "assets/ui/intro/intro.pal"
+intro_palend:
 
 .ends
 
-.section ".rostats" superfree
+.section ".rolevel1tileset" superfree
 
-stats_til:
-.incbin "assets/ui/stats/stats.pic"
-stats_tilend:
+level1tileset_til:
+.incbin "assets/levels/level1_tileset.pic"
+level1tileset_tilend:
 
-stats_map:
-.incbin "assets/ui/stats/stats.map"
-stats_mapend:
+level1tileset_pal:
+.incbin "assets/levels/level1_tileset.pal"
+level1tileset_palend:
 
-stats_pal:
-.incbin "assets/ui/stats/stats.pal"
-stats_palend:
+.ends
+
+.section ".rospryaqub" superfree
+
+yaqub_til:
+.incbin "assets/player/yaqub.pic"
+yaqub_tilend:
+
+yaqub_pal:
+.incbin "assets/player/yaqub.pal"
+yaqub_palend:
+
+.ends
+
+.section ".rosprslash" superfree
+
+crescentslash_til:
+.incbin "assets/player/crescent_slash.pic"
+crescentslash_tilend:
+
+crescentslash_pal:
+.incbin "assets/player/crescent_slash.pal"
+crescentslash_palend:
+
+.ends
+
+.section ".rosprscarab" superfree
+
+scarab_til:
+.incbin "assets/enemies/scarab.pic"
+scarab_tilend:
+
+scarab_pal:
+.incbin "assets/enemies/scarab.pal"
+scarab_palend:
+
+.ends
+
+.section ".rosprsnake" superfree
+
+snake_til:
+.incbin "assets/enemies/snake.pic"
+snake_tilend:
+
+snake_pal:
+.incbin "assets/enemies/snake.pal"
+snake_palend:
+
+.ends
+
+.section ".rosprmummy" superfree
+
+mummy_til:
+.incbin "assets/enemies/mummy.pic"
+mummy_tilend:
+
+mummy_pal:
+.incbin "assets/enemies/mummy.pal"
+mummy_palend:
+
+.ends
+
+.section ".rosprrat" superfree
+
+rat_til:
+.incbin "assets/enemies/rat.pic"
+rat_tilend:
+
+rat_pal:
+.incbin "assets/enemies/rat.pal"
+rat_palend:
+
+.ends
+
+.section ".rosprboss" superfree
+
+bossscorpion_til:
+.incbin "assets/enemies/boss_scorpion.pic"
+bossscorpion_tilend:
+
+bossscorpion_pal:
+.incbin "assets/enemies/boss_scorpion.pal"
+bossscorpion_palend:
 
 .ends
