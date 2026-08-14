@@ -379,6 +379,22 @@ void enemy_draw_all(u16 camX) {
     draw_boss(camX);
 }
 
+void enemy_hide_all(void) {
+    u8 slot;
+
+    /* oamDynamic32Draw() uploads whatever oambuffer[slot].oamgraphics points
+       to -- these slots only get a valid pointer via enemy_setup_common()
+       (called from enemy_init_level1()), so that has to run first or the
+       draw call below would DMA garbage into the shared sprite VRAM pool. */
+    enemy_init_level1();
+
+    for (slot = SCARAB_OAM_SLOT; slot <= BOSS_OAM_BR; slot++) {
+        oambuffer[slot].oamx = 255;
+        oambuffer[slot].oamy = 240;
+        oamDynamic32Draw(slot);
+    }
+}
+
 u8 enemy_is_active(EnemyId id) {
     if (id == ENEMY_BOSS) {
         return bossState != BOSS_DEFEATED;

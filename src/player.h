@@ -16,6 +16,7 @@
 // game_state.c can drive a couple of scripted poses during the INTRO
 // cutscene.
 #define PLAYER_FRAME_IDLE0 0
+#define PLAYER_FRAME_WALK0 3
 #define PLAYER_FRAME_SLEEP0 13
 
 void player_init(s16 x, s16 y);

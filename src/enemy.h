@@ -16,6 +16,12 @@ void enemy_init_level1(void);
 void enemy_update_all(s16 playerX);
 void enemy_draw_all(u16 camX);
 
+// Parks every enemy/boss OAM slot off-screen without touching game state.
+// enemy_draw_all() only runs during gameplay, so before that (title/intro)
+// those hardware OAM entries are never written and can show stale/garbage
+// tile data; call this once before the first frame that isn't gameplay.
+void enemy_hide_all(void);
+
 u8 enemy_is_active(EnemyId id);
 void enemy_get_hurtbox(EnemyId id, s16 *x, s16 *y, u8 *w, u8 *h);
 

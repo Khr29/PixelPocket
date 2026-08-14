@@ -58,6 +58,11 @@ static void enter_title(void) {
     /* Sleeping Yaqub is a real sprite, not baked into the title artwork. */
     player_init(112, 144);
     player_set_pose(PLAYER_FRAME_SLEEP0, 0);
+
+    /* enemy_draw_all() doesn't run until gameplay, so their OAM slots have
+       never been written this power-on and can show stale hardware OAM
+       contents otherwise. */
+    enemy_hide_all();
 }
 
 static void enter_intro(void) {
