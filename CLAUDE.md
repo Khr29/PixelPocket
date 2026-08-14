@@ -1,178 +1,150 @@
-==================================================
-PROJECT IDENTITY -- READ THIS FIRST
-==================================================
+# YAQUB — PROJECT RULES
 
-This project is YAQUB: THE SLEEPY GUARDIANS OF THE NILE, a 2D pixel-art
-action platformer in the Game Boy / Game Boy Color tradition, running on
-native SNES hardware via PVSnesLib and targeting the Anbernic RG35XX
-Plus's SNES emulator core.
+## Project identity
 
-It replaced an earlier project in this same repo/directory (QUEST
-DASHBOARD -- a non-game daily-quest progression UI, and before that an
-RPG-town prototype called "Deddy Party"). Both are gone; do not resurrect
-dashboard/XP/streak/quest-tracker concepts or town/NPC-walking concepts
-here unless the user explicitly asks for a new project again.
+This project is **YAQUB: THE SLEEPY GUARDIANS OF THE NILE**, a compact 2D
+pixel-art action platformer built for native SNES hardware with PVSnesLib and
+targeted at the Anbernic RG35XX Plus SNES emulator/core.
 
-The game is explicitly NOT:
+The visual source of truth is the supplied **Yaqub Forgotten Oasis art package**:
+Yaqub sprite sheet, enemy sprites, Golden Scorpion, tiles, background layers,
+and opening scene.
 
-- a productivity dashboard or information screen
-- an RPG town/house/explorable overworld with idle NPCs to talk to
-- a game with character-select or a large ensemble cast on screen at once
+Do not replace that visual direction with generic procedural art.
 
-It IS a compact side-scrolling action platformer: explore, fight small
-enemies with a short claw attack, collect treasure, find secrets, beat a
-boss. Camera is a classic 2D side-scroller (player kept near center,
-tile-based horizontal scrolling).
+## Current scope
 
-==================================================
-STORY (for flavor/reference -- do not overbuild beyond Level 1)
-==================================================
+One polished vertical slice:
 
-The Kingdom of Qamar was protected by six legendary but chronically
-sleepy feline guardians. YAQUB QAMAR AD-DIN DIBIAZAH -- a Bengal-marked
-warrior cat with the Moon Claw -- is the only one playable right now. An
-earthquake cracks open the desert near his sleeping spot outside a ruined
-temple; a scarab lands on his face; he chases it, and that's the
-tutorial. The antagonist (not yet implemented) is THE SAND PHARAOH. The
-tone: the world is drawn seriously/moodily, the characters are
-ridiculous. Humor is short -- one line at a time, not every screen.
+Title → Intro → The Forgotten Oasis → Yaqub movement/jump/attack → enemies →
+Golden Scorpion.
 
-Do NOT implement: character switching / the other 5 guardians, the Sand
-Pharaoh boss, levels 2-6, inventory, save system, procedural generation,
-or multiplayer/online features unless explicitly asked. Level 1 (THE
-FORGOTTEN OASIS) is the whole scope for now.
+Do not add unrelated systems unless explicitly requested.
 
-==================================================
-VISUAL STYLE
-==================================================
+## Visual rules
 
-Chunky, hard-edged, low-color pixel art -- Game Boy Color-era action
-platformer, not modern vector/gradient/anti-aliased art. Dark nighttime
-palette (deep indigo/navy sky), moonlight, warm sand, weathered stone,
-restrained accent colors (gold for the Moon Claw and important UI, warm
-cream text). No blurry scaling, no photographic textures, no realistic
-3D, no modern rounded-card UI.
+- Chunky, crisp pixel art.
+- Hard pixel edges; no anti-aliasing or blur.
+- Dark navy/blue-green night palette with moonlit green, warm sand, stone,
+and restrained gold accents.
+- Yaqub is a spotted Bengal-like cat with the exact proportions/markings of
+the supplied reference sprite sheet.
+- The environment should match the supplied Forgotten Oasis reference as
+closely as SNES hardware permits.
+- Do not replace the reference-derived art with geometric placeholders.
+- Use nearest-neighbor/integer scaling only.
 
-Sprites are authored at native pixel size: 32x32 for Yaqub, the scarab,
-snake, tiny mummy, and desert rat; the Golden Scorpion boss is drawn as
-four 32x32 quadrants composited into one 64x64 creature (see "SNES
-IMPLEMENTATION NOTES" -- the dynamic OAM engine doesn't expose a real
-64x64 draw call). Environment tiles are authored at 16x16 but converted
-and stored as four 8x8 engine tiles each (again see below) -- never drawn
-large and shrunk.
+## Asset source of truth
 
-==================================================
-CURRENT ART PIPELINE
-==================================================
+The current PNG assets were derived from the supplied art package and prepared
+for the existing SNES frame layouts:
 
-There is no dedicated pixel-art tool in this environment. Current art
-(assets/player, assets/enemies, assets/levels, assets/ui/title,
-assets/ui/intro) was generated programmatically with a Pillow (Python)
-script using simple geometric primitives at native resolution, then
-quantized to an explicit <=16-color indexed palette per asset (index 0 =
-transparent for sprites) so gfx4snes can convert it. A real reference art
-bible (user-supplied) drives the palette, Yaqub's design (Bengal spots,
-green collar), and the tileset/scene content, but the reference image
-itself is an AI-generated continuous-tone illustration (210k+ distinct
-colors, soft shading/anti-aliasing) -- NOT real pixel art -- so it was
-used as a direction reference, not extracted from directly; cropping and
-downsampling it was tried and confirmed to produce illegible, muddy
-sprites, incompatible with SNES 4bpp tiles and this project's own
-no-anti-aliasing rule. Current art is still placeholder-quality (readable
-and on-style, not hand-crafted final art). If the user provides real
-*pixel* art, replace the PNGs in place; the Makefile/gfx4snes/data.asm
-pipeline doesn't need to change as long as pixel dimensions, frame-grid
-layout, and <=16-color-per-asset stay the same (see comments in
-src/player.h, src/enemy.h, and the Makefile's bitmaps rules for each
-asset's exact frame grid).
+- `assets/player/yaqub.png` — 4×4 grid of 32×32 frames:
+  idle×3, walk×4, jump, fall, attack×3, hurt, sleep.
+- `assets/player/crescent_slash.png` — 2×16×16 effect frames.
+- `assets/enemies/scarab.png`
+- `assets/enemies/snake.png`
+- `assets/enemies/mummy.png`
+- `assets/enemies/rat.png`
+- `assets/enemies/boss_scorpion.png` — 2×2 grid of 64×64 states, each
+  represented by the engine as a 32×32 quadrant.
+- `assets/levels/level_bg_tileset.png` — reference-derived 8×8 SNES tiles.
+- `src/level_bg_map.h` — 64×32 visual map for the Forgotten Oasis.
+- `assets/ui/title/title.png` — 256×224 title scene using the same visual
+  language.
+- `assets/ui/intro/intro.png` — 256×224 opening scene.
 
-==================================================
-SNES IMPLEMENTATION NOTES
-==================================================
+Every game asset must remain SNES-compatible: 4bpp/16-color where applicable,
+transparent index 0 for sprites, and fixed frame dimensions.
 
-Toolchain: PVSnesLib (816-tcc / wla-65816 / wlalink / gfx4snes), installed
-to C:/snesdev, built via devkitPro's bundled MSYS2 bash -- see README.md.
-This was chosen over an actual Game Boy Color toolchain (GBDK-2020/RGBDS)
-because this machine's dev setup is PVSnesLib-only; the RG35XX Plus runs
-SNES natively too, so the proven build->run->test loop was kept and the
-*art direction* targets the GBC feel instead of the GBC hardware.
+## SNES implementation
 
-Engine architecture (src/): game_state (TITLE/INTRO/GAMEPLAY), input,
-camera, level (tilemap + per-tile collision data), collision (AABB vs.
-tile grid), player (physics/animation/attack), enemy (scarab/snake/mummy/
-rat/boss AI), combat (hitboxes, health), text (reused from the old
-project -- generic BG1 bitmap-font renderer, used for HUD + intro
-dialogue).
+Toolchain:
 
-This is a hand-rolled lightweight engine using PVSnesLib's low-level BG
-primitives directly (bgInitTileSet/bgInitMapSet/bgSetScroll) for
-backgrounds, and its *dynamic OAM sprite engine* (oamInitDynamicSprite +
-oambuffer[]/oamDynamic16Draw/oamDynamic32Draw) for sprites -- NOT raw
-oamSet (its gfxoffset expects literal hardware tile numbers with a
-128px-VRAM-row wraparound quirk that isn't worth the risk) and NOT
-PVSnesLib's higher-level object/map engine (objInitEngine/mapLoad/
-tmx2snes, which expects levels authored in Tiled .tmj with per-tile
-custom properties -- not practical to hand-write reliably outside the
-Tiled editor). The level's tile grid + collision table lives directly as
-a C array in src/level1_data.h.
+- PVSnesLib 4.6.0
+- 816-tcc
+- wla-65816 / wlalink
+- gfx4snes
+- devkitPro MSYS2
+- Mesen2 for PC testing
 
-Two dimension-mapping quirks worth knowing before touching this again:
-- The dynamic sprite engine has no real 64x64 draw call, so the Golden
-  Scorpion is four 32x32 "quadrant" sprites (their own OAM slots) drawn
-  together each frame -- see enemy.c's boss_quadrant_frames()/draw_boss().
-  Mirroring it for the opposite facing direction requires swapping which
-  quadrant-graphic renders on which side, not just setting the hflip bit.
-- Environment tiles are authored at 16x16 in assets/levels/level1_tileset.png
-  but converted at gfx4snes -s8 (8x8), the same proven flag used for every
-  other BG asset -- adopting the PPU's separate 16x16-BG-tile hardware
-  mode (a real but much less common/documented path) was judged not worth
-  the risk. Each 16x16 authored tile is placed as a 2x2 block of matching
-  8x8 engine cells; level1_data.h's raw tile indices already account for
-  this (see the meta_subtiles() formula in scratchpad/gen_level2.py, the
-  script that generated it).
+Video:
 
-VRAM layout is fully documented with the actual measured .pic byte sizes
-in src/level.h's header comment -- read that before changing any VRAM
-address in this project. Do not estimate sprite/tile byte sizes by eye;
-gfx4snes pads any sprite sheet narrower than 128px up to 128px, so a
-64x32 2-frame enemy sheet costs 4 frames' worth of VRAM, not 2. Check the
-actual generated .pic file size after a build instead.
+- Mode 1
+- 256×224
+- BG0 = gameplay/title/intro artwork
+- BG1 is reserved for future HUD/text work and is currently not initialized
+  by the game state.
 
-Gotchas hit while building this project (see this repo's Claude memory
-for full detail if debugging OAM/BG issues again):
-- `setMode(BG_MODE1, ...)` MUST be called before the first `setScreenOn()`
-  -- every PVSnesLib example does this and it's easy to forget; omitting
-  it leaves REG_BGMODE at its hardware-reset value, so the PPU doesn't
-  know your tile data is 4bpp/16-color and every BG tile fetch comes out
-  as repeating, doubled, corrupted-looking garbage.
-- The dynamic sprite engine's `oambuffer[].oamattribute` bit0 is
-  repurposed from the static-sprite "tile number high bit" meaning to a
-  size-select flag: OR in `OBJ_SIZEL` (0, large) or `OBJ_SIZES` (1, small)
-  to match whichever of `oamDynamic16Draw`/`oamDynamic32Draw` you call for
-  that sprite -- confirmed via pvsneslib's own DynamicEngineSprite.c
-  example, which mixes both sizes through one OBJ_SIZE16_L32 pool.
-- `bgInitTileSet`/`bgInitMapSet` force the screen blank as a VRAM-write
-  safety measure and don't restore it; call `setScreenOn()` again
-  afterward if they run after the game's initial `setScreenOn()`.
-- `oamSet`/`oamSetEx`/`oamSetXY`'s `id` parameter is a byte offset into
-  OAM (4 bytes/sprite), not a plain sprite index -- the Nth sprite's id is
-  `N*4`. (Only relevant if raw oamSet is ever reintroduced; the dynamic
-  engine's oambuffer[] is indexed as plain 0..127.)
+### VRAM layout
 
-==================================================
-CONTROLS
-==================================================
+- `0x0000–0x37FF` — dynamic large OBJ pool
+- `0x3800–0x3BFF` — dynamic small OBJ pool
+- `0x4000–0x77FF` — BG0 tile data
+- `0x7800–0x7FFF` — BG0 64×32 tilemap
 
-D-PAD: move   A: jump   B: crescent-slash attack   START: pause
-(X/Y/SELECT reserved for future special ability / map / inventory --
-not wired up yet, don't add unnecessary controls ahead of need)
+BG character bases must remain 4K-word aligned. Do not invent arbitrary BG
+tile addresses.
 
-==================================================
-DO NOT OVERBUILD
-==================================================
+The reference-derived gameplay tileset currently uses about 27.8 KB of tile
+data, fitting inside the reserved BG0 tile region.
 
-The current milestone is a single polished vertical slice: title screen
--> intro -> Level 1 (The Forgotten Oasis) -> Yaqub can move/jump/attack
--> scarab + snake + tiny mummy + desert rat enemies -> basic collision ->
-health -> Golden Scorpion boss. Don't add more levels, more enemies, more
-guardians, save data, or menus beyond this until asked.
+## Gameplay
+
+Controls:
+
+- D-pad — move
+- A — jump
+- B — Crescent Slash
+- START — advance/skip title and intro
+
+Current engine systems:
+
+- game state
+- input
+- horizontal camera
+- tile collision
+- player physics/animation
+- combat
+- scarab
+- snake
+- tiny mummy
+- desert rat
+- Golden Scorpion boss
+
+## Important development rule
+
+Always test the actual ROM in Mesen2 after graphics/VRAM changes.
+
+A clean compiler build does not prove that the PPU is rendering correctly.
+
+When graphics fail, isolate:
+
+1. screen/mode
+2. BG tile base
+3. BG map base
+4. palette
+5. VRAM size/overlap
+6. OAM
+7. actual generated `.pic/.pal/.map` data
+
+Do not rewrite the entire engine to solve a single rendering problem.
+
+## Art priority
+
+The supplied Forgotten Oasis reference is the visual target. Preserve its:
+
+- character designs
+- palette
+- moonlit atmosphere
+- Egyptian ruins
+- pyramids
+- palms
+- grass
+- water
+- stonework
+- silhouettes
+- overall composition and pixel density
+
+When adapting artwork to SNES limits, preserve the visual identity before adding
+new gameplay features.

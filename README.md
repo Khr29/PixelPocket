@@ -1,101 +1,120 @@
-# YAQUB: THE SLEEPY GUARDIANS OF THE NILE (SNES)
+# YAQUB: THE SLEEPY GUARDIANS OF THE NILE
 
-A 2D pixel-art action platformer in the Game Boy Color tradition, built
-on native SNES hardware with PVSnesLib and targeting the Anbernic RG35XX
-Plus's SNES emulator core. Developed and tested on PC first.
+A compact SNES pixel-art action platformer targeting the Anbernic RG35XX Plus.
 
-You play Yaqub, a Bengal-marked warrior cat armed with the Moon Claw, who
-is much more interested in sleeping than in saving the Kingdom of Qamar.
+## Current vertical slice
 
-## Status
+- Title screen
+- Opening intro
+- The Forgotten Oasis
+- Yaqub movement and jumping
+- Crescent Claw attack
+- Scarab
+- Desert Snake
+- Tiny Mummy
+- Desert Rat
+- Golden Scorpion boss
+- Horizontal camera scrolling
+- Tile collision
 
-First vertical slice: title screen -> intro -> Level 1 (The Forgotten
-Oasis) -> move / jump / crescent-slash attack -> scarab + snake + tiny
-mummy + desert rat enemies -> health -> the Golden Scorpion boss. See
-`CLAUDE.md` for full design direction and what's deliberately not built
-yet.
+## Visual direction
+
+The supplied Yaqub/Forgotten Oasis art package is the visual source of truth.
+The runtime artwork uses the same characters, Egyptian night environment,
+moonlight, colors, sprites, and chunky pixel treatment, adapted to native SNES
+4bpp tiles and sprite limits.
 
 ## Toolchain
 
-- [PVSnesLib](https://github.com/alekmaul/pvsneslib) 4.6.0 -- C compiler
-  (`816-tcc`), assembler/linker (`wla-65816` / `wlalink`), and the
-  `gfx4snes` PNG-to-native-tile/palette converter for the 65816.
-- Installed to `C:/snesdev` (the `PVSNESLIB_HOME` env var, set as a
-  persistent Windows user variable, points here).
-- Uses devkitPro's bundled MSYS2 (`C:\devkitPro\msys2`) for `bash`/`make`.
+- PVSnesLib 4.6.0
+- 816-tcc
+- wla-65816 / wlalink
+- gfx4snes
+- devkitPro MSYS2
+- Mesen2
 
-**Important Windows-specific gotcha**: `PVSNESLIB_HOME` must be a
-Windows-style path with forward slashes (`C:/snesdev`), *not* the
-Unix-mount style (`/c/snesdev`) some PVSnesLib docs show. The bundled
-`wlalink.exe`/`816-tcc.exe` are native (non-MSYS) binaries and can't
-resolve `/c/...` paths passed as arguments -- only `C:/...` ones.
+PVSnesLib is expected at `C:/snesdev` through `PVSNESLIB_HOME`.
 
 ## Build
 
-From an MSYS2 shell with `PVSNESLIB_HOME` and `PATH` set (or via the VS
-Code "Build Game" task, which does this for you):
+From devkitPro's MSYS2 shell:
 
 ```sh
 export PVSNESLIB_HOME=C:/snesdev
 export PATH=$PVSNESLIB_HOME/devkitsnes/bin:$PVSNESLIB_HOME/devkitsnes/tools:$PATH
+make clean
 make
 ```
 
-Produces `Yaqub.sfc` in the project root.
+The ROM is produced as:
 
-```sh
-make clean
+```text
+Yaqub.sfc
 ```
 
-Removes build artifacts, including the `assets/**/*.pic|.pal|.map|.inc`
-files generated from source `.png` art.
+## PC test
 
-## PC testing (VS Code + Mesen2)
+Open `Yaqub.sfc` in Mesen2.
 
-- **Terminal -> Run Task -> Build Game** (`Ctrl+Shift+B`) -- builds
-  `Yaqub.sfc`.
-- **Terminal -> Run Task -> Run Game** (`Ctrl+Alt+R`) -- builds, then
-  launches it in [Mesen2](https://www.mesen.ca/) (installed via
-  `winget install SourMesen.Mesen2`).
+Controls:
 
-## Controls
-
-D-PAD move, A jump, B crescent-slash attack, START pause.
-
-## Structure
-
+```text
+D-pad   Move
+A       Jump
+B       Crescent Slash
+START   Advance / skip intro
 ```
+
+## Project structure
+
+```text
 src/
-    main.c          state-machine entry point / frame loop
-    game_state.c/h  TITLE / INTRO / GAMEPLAY states
-    input.c/h       pad wrapper
-    camera.c/h      horizontal scroll follow-cam
-    level.c/h + level1_data.h   tilemap + per-tile collision table
-    collision.c/h   AABB-vs-tile-grid queries
-    player.c/h      Yaqub: physics, animation state machine, attack
-    enemy.c/h       scarab / snake / tiny mummy / desert rat / Golden
-                    Scorpion boss AI (boss drawn as 4 composited quadrants)
-    combat.c/h      hitboxes, hurtboxes, health, damage
-    text.c/h        generic BG1 bitmap-font renderer (HUD + intro text)
+  main.c
+  game_state.c/h
+  input.c/h
+  camera.c/h
+  level.c/h
+  level1_data.h        collision/spawn data
+  level_bg_map.h       reference-derived visual map
+  collision.c/h
+  player.c/h
+  enemy.c/h
+  combat.c/h
+
 assets/
-    player/         yaqub.png (32x32 frame grid), crescent_slash.png (16x16)
-    enemies/        scarab/snake/mummy/rat.png (32x32 frame grid),
-                    boss_scorpion.png (32x32 quadrants, 4 per 64x64 state)
-    levels/         level1_tileset.png (16x16 authored tiles, stored as
-                    2x2 blocks of 8x8 engine tiles -- see CLAUDE.md)
-    ui/font/        runtime bitmap font
-    ui/title/       title.png (full 256x224 picture)
-    ui/intro/       intro.png (full 256x224 picture)
-data.asm    hand-written WLA-DX wrapper that incbins converted art
-Makefile    PVSnesLib snes_rules-based build; ROMNAME=Yaqub
+  player/
+    yaqub.png
+    crescent_slash.png
+  enemies/
+    scarab.png
+    snake.png
+    mummy.png
+    rat.png
+    boss_scorpion.png
+  levels/
+    level_bg_tileset.png
+  ui/
+    title/title.png
+    intro/intro.png
+
+data.asm
+Makefile
+CLAUDE.md
 ```
 
-Art is currently programmatically generated placeholder pixel art (see
-`CLAUDE.md` -> "Current art pipeline") -- readable and on-style, not
-hand-crafted. Drop in replacement PNGs at the same pixel dimensions/frame
-grid to upgrade it without touching the build pipeline.
+## SNES VRAM layout
 
-## Testing on hardware
+```text
+0x0000–0x37FF   dynamic large sprites
+0x3800–0x3BFF   dynamic small sprites
+0x4000–0x77FF   BG0 tiles
+0x7800–0x7FFF   BG0 64×32 map
+```
 
-Copy `Yaqub.sfc` to the ROMs folder on the RG35XX Plus's SD card and
-launch it with the stock SNES emulator core.
+BG tile bases must stay 4K-word aligned.
+
+## Design rule
+
+Do not replace the supplied Forgotten Oasis visual direction with generic
+placeholder graphics. New artwork should be designed to match the existing
+reference-derived assets and remain usable on the RG35XX Plus.
