@@ -36,6 +36,7 @@ bitmaps: assets/ui/title/title.pic \
          assets/levels/level_bg_tileset.pic \
          assets/player/yaqub.pic \
          assets/player/crescent_slash.pic \
+         assets/player/sleep_z.pic \
          assets/enemies/scarab.pic \
          assets/enemies/snake.pic \
          assets/enemies/mummy.pic \
@@ -60,6 +61,10 @@ assets/player/yaqub.pic: assets/player/yaqub.png
 
 assets/player/crescent_slash.pic: assets/player/crescent_slash.png
 	@echo convert crescent slash effect ... $(notdir $<)
+	$(GFXCONV) -s 16 -o 16 -u 16 -p -t png -i $<
+
+assets/player/sleep_z.pic: assets/player/sleep_z.png
+	@echo convert sleeping Z animation ... $(notdir $<)
 	$(GFXCONV) -s 16 -o 16 -u 16 -p -t png -i $<
 
 assets/enemies/scarab.pic: assets/enemies/scarab.png

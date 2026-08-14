@@ -3,8 +3,8 @@
 
 #include <snes.h>
 
-// Sets up shared systems (text engine, sprite palettes) and shows the
-// title screen. Call once at startup, before the main loop.
+// Sets up the title screen and the opening sequence. Call once at startup,
+// before the main loop.
 void game_state_init(void);
 
 // Runs the current state's logic + draw for one frame, including any

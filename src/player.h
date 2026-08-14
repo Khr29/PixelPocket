@@ -5,6 +5,7 @@
 
 #define PLAYER_OAM_SLOT 0
 #define PLAYER_SLASH_OAM_SLOT 1
+#define PLAYER_SLEEP_Z_OAM_SLOT 10
 
 #define PLAYER_SPRITE_W 32
 #define PLAYER_SPRITE_H 32
@@ -24,6 +25,8 @@ void player_draw(u16 camX);
 // Overrides the sprite's frame/facing directly (used by the INTRO state's
 // scripted sleeping/waking beats, bypassing the normal physics FSM).
 void player_set_pose(u8 frameId, u8 flipX);
+void player_set_position(s16 x, s16 y);
+void player_draw_sleep_z(s16 x, s16 y, u8 phase);
 
 s16 player_get_x(void);
 s16 player_get_y(void);

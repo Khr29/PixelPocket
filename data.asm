@@ -52,6 +52,15 @@ crescentslash_pal:
 crescentslash_palend:
 .ends
 
+.section ".rosprsleepz" superfree
+sleepz_til:
+.incbin "assets/player/sleep_z.pic"
+sleepz_tilend:
+sleepz_pal:
+.incbin "assets/player/sleep_z.pal"
+sleepz_palend:
+.ends
+
 .section ".rosprscarab" superfree
 scarab_til:
 .incbin "assets/enemies/scarab.pic"

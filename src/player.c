@@ -6,9 +6,12 @@ extern char yaqub_til, yaqub_tilend;
 extern char yaqub_pal, yaqub_palend;
 extern char crescentslash_til, crescentslash_tilend;
 extern char crescentslash_pal, crescentslash_palend;
+extern char sleepz_til, sleepz_tilend;
+extern char sleepz_pal, sleepz_palend;
 
 #define PLAYER_PAL_ROW 0
 #define SLASH_PAL_ROW 1
+#define SLEEP_Z_PAL_ROW 7
 
 // Frame indices into the yaqub.png 4x4 grid of 32x32 cells (row-major).
 #define F_IDLE0 0
@@ -100,6 +103,7 @@ static void refresh_anim(void) {
 void player_init(s16 x, s16 y) {
     setPalette((u8 *)&yaqub_pal, 128 + PLAYER_PAL_ROW * 16, 16 * 2);
     setPalette((u8 *)&crescentslash_pal, 128 + SLASH_PAL_ROW * 16, 16 * 2);
+    setPalette((u8 *)&sleepz_pal, 128 + SLEEP_Z_PAL_ROW * 16, 16 * 2);
 
     px = x;
     py = y;
@@ -120,6 +124,13 @@ void player_init(s16 x, s16 y) {
     oambuffer[PLAYER_OAM_SLOT].oamattribute = OBJ_SIZEL | (2 << 4) | (PLAYER_PAL_ROW << 1);
     oambuffer[PLAYER_OAM_SLOT].oamrefresh = 1;
 
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamgraphics = (u8 *)&sleepz_til;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamframeid = 0;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamattribute = OBJ_SIZES | (2 << 4) | (SLEEP_Z_PAL_ROW << 1);
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamrefresh = 1;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamx = 255;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamy = 240;
+
     oambuffer[PLAYER_SLASH_OAM_SLOT].oamgraphics = (u8 *)&crescentslash_til;
     oambuffer[PLAYER_SLASH_OAM_SLOT].oamframeid = SLASH_F_CRESCENT;
     oambuffer[PLAYER_SLASH_OAM_SLOT].oamattribute = OBJ_SIZES | (2 << 4) | (SLASH_PAL_ROW << 1);
@@ -132,6 +143,28 @@ void player_set_pose(u8 frameId, u8 flipX) {
     scriptedPose = 1;
     animFrame = frameId;
     facingLeft = flipX;
+}
+
+void player_set_position(s16 x, s16 y) {
+    px = x;
+    py = y;
+}
+
+void player_draw_sleep_z(s16 x, s16 y, u8 phase) {
+    // The Zs are a separate 16x16 sprite so they can drift upward
+    // independently of the sleeping cat. Movement is deliberately slow
+    // and stepped to preserve the chunky handheld-pixel feel.
+    s16 rise = (s16)((phase >> 4) & 7);
+    s16 sx = (s16)(x + 18 - (rise >> 1));
+    s16 sy = (s16)(y - 12 - rise);
+
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamattribute =
+        OBJ_SIZES | (2 << 4) | (SLEEP_Z_PAL_ROW << 1);
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamframeid = 0;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamrefresh = 1;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamx = (u16)sx;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamy = (u16)sy;
+    oamDynamic16Draw(PLAYER_SLEEP_Z_OAM_SLOT);
 }
 
 void player_update(void) {
@@ -243,6 +276,11 @@ void player_draw(u16 camX) {
         oambuffer[PLAYER_OAM_SLOT].oamy = (u16)sy;
     }
     oamDynamic32Draw(PLAYER_OAM_SLOT);
+
+    // Sleep Zs are only used by the title/intro scene.
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamx = 255;
+    oambuffer[PLAYER_SLEEP_Z_OAM_SLOT].oamy = 240;
+    oamDynamic16Draw(PLAYER_SLEEP_Z_OAM_SLOT);
 
     if (!scriptedPose && state == PSTATE_ATTACK &&
         stateTimer >= ATTACK_ACTIVE_LO && stateTimer <= ATTACK_ACTIVE_HI) {
