@@ -4,8 +4,8 @@ A compact SNES pixel-art action platformer targeting the Anbernic RG35XX Plus.
 
 ## Current vertical slice
 
-- Title screen
-- Opening intro
+- Title screen with a sleeping, gently-bobbing Yaqub
+- Opening intro (sleep -> wake beats)
 - The Forgotten Oasis
 - Yaqub movement and jumping
 - Crescent Claw attack
@@ -52,6 +52,11 @@ The ROM is produced as:
 Yaqub.sfc
 ```
 
+Git Bash cannot run this Makefile; it must be driven through devkitPro's own
+`bash.exe`. In VS Code, use the **Build Game** / **Run Game** tasks
+(`.vscode/tasks.json`) — Run Game builds the ROM and launches it in Mesen2
+automatically.
+
 ## PC test
 
 Open `Yaqub.sfc` in Mesen2.
@@ -85,6 +90,7 @@ assets/
   player/
     yaqub.png
     crescent_slash.png
+    sleep_z.png
   enemies/
     scarab.png
     snake.png
