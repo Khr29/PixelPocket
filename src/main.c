@@ -11,12 +11,18 @@
 #include "game_state.h"
 
 int main(void) {
-    // Mode 1: BG1 (our BG0/level+title+intro layer) and BG2 (our BG1/text
-    // layer) are both 16-color; BG3 is unused. Every PVSnesLib example calls
-    // this before the first setScreenOn() -- omitting it leaves REG_BGMODE
-    // at its hardware-reset value, so the PPU never learns our tile data is
+    // Mode 1: BG0 (our level+title+intro layer) is 16-color and the only
+    // background actually initialized right now. BG1 is reserved for future
+    // HUD/text (see level.h) but has no tile/map data loaded yet, and BG2/3
+    // are unused entirely -- leaving any of them enabled makes the PPU fetch
+    // tiles from whatever VRAM their registers happen to point at (e.g. the
+    // OAM sprite pool at 0x0000), which shows up as garbled sprite-sized
+    // noise over the picture. Every PVSnesLib example also calls setMode()
+    // before the first setScreenOn() -- omitting it leaves REG_BGMODE at its
+    // hardware-reset value, so the PPU never learns our tile data is
     // 4bpp/16-color and every BG tile fetch comes out corrupted.
     setMode(BG_MODE1, 0);
+    bgSetDisable(1);
     bgSetDisable(2);
     bgSetDisable(3);
 
