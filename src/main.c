@@ -1,9 +1,8 @@
 /*---------------------------------------------------------------------------------
     YAQUB: THE SLEEPY GUARDIANS OF THE NILE (SNES)
 
-    A compact 2D pixel-art action platformer. See CLAUDE.md for the full
-    design direction -- no world map, no character select, just Yaqub,
-    the Moon Claw, and a very sleepy sense of adventure.
+    A compact 2D pixel-art action platformer -- no world map, no character
+    select, just Yaqub, the Moon Claw, and a very sleepy sense of adventure.
 
     D-PAD: move   A: jump   B: crescent-slash attack   START: pause/skip
 ---------------------------------------------------------------------------------*/

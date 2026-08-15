@@ -105,7 +105,6 @@ assets/
 
 data.asm
 Makefile
-CLAUDE.md
 ```
 
 ## SNES VRAM layout
